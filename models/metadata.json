@@ -1,0 +1,76 @@
+{
+  "model_type": "SimpleDeepfakeCNN",
+  "image_size": [
+    128,
+    128
+  ],
+  "frames_per_video": 8,
+  "best_val_accuracy": 0.9423,
+  "device_used": "cpu",
+  "total_videos": 519,
+  "train_videos": 415,
+  "val_videos": 104,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.6134,
+      "train_accuracy": 0.6964,
+      "val_loss": 0.5023,
+      "val_accuracy": 0.7404
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.5113,
+      "train_accuracy": 0.7446,
+      "val_loss": 0.3349,
+      "val_accuracy": 0.9135
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.5089,
+      "train_accuracy": 0.7349,
+      "val_loss": 0.4724,
+      "val_accuracy": 0.8173
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.5184,
+      "train_accuracy": 0.7301,
+      "val_loss": 0.4196,
+      "val_accuracy": 0.8654
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.4459,
+      "train_accuracy": 0.7904,
+      "val_loss": 0.5141,
+      "val_accuracy": 0.7981
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.4793,
+      "train_accuracy": 0.7614,
+      "val_loss": 0.3437,
+      "val_accuracy": 0.9231
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.4759,
+      "train_accuracy": 0.7518,
+      "val_loss": 0.2549,
+      "val_accuracy": 0.9423
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.4678,
+      "train_accuracy": 0.7928,
+      "val_loss": 0.2915,
+      "val_accuracy": 0.9327
+    }
+  ],
+  "label_map": {
+    "0": "Real",
+    "1": "Deepfake"
+  },
+  "notes": "Video prediction is based on averaging frame-level CNN logits."
+}
