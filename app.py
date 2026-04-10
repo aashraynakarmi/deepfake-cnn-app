@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 from predict import predict_video, model_available
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
+UPLOAD_FOLDER = "/tmp/uploads"
 ALLOWED_EXTENSIONS = {"mp4", "mov", "avi", "mkv"}
 
 app = Flask(__name__)
@@ -40,7 +40,7 @@ def index():
                 save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
                 file.save(save_path)
                 result = predict_video(save_path)
-                video_url = f"/static/uploads/{filename}"
+                video_url = None
 
     return render_template("index.html", result=result, error=error, video_url=video_url)
 
