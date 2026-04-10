@@ -28,7 +28,7 @@ torch.manual_seed(SEED)
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 TRANSFORM = transforms.Compose([
-    transforms.Resize((128, 128)),
+    transforms.Resize((224, 224)),
     transforms.ToTensor(),
 ])
 
@@ -64,7 +64,7 @@ def main():
         real_dir=REAL_DIR,
         fake_dir=FAKE_DIR,
         transform=TRANSFORM,
-        frames_per_video=8,
+        frames_per_video=12,
     )
 
     total_videos = len(dataset)
@@ -146,8 +146,8 @@ def main():
 
     metadata = {
         "model_type": "SimpleDeepfakeCNN",
-        "image_size": [128, 128],
-        "frames_per_video": 8,
+        "image_size": [224, 224],
+        "frames_per_video": 12,
         "best_val_accuracy": round(best_val_acc, 4),
         "device_used": str(DEVICE),
         "total_videos": total_videos,

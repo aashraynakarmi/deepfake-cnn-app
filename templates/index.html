@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Deepfake Video Detection</title>
+  <style>
+    :root {
+      --bg-1: #000000;
+      --bg-2: #000000;
+      --card: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.12);
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --accent: #7c3aed;
+      --accent-2: #06b6d4;
+      --success-bg: rgba(34, 197, 94, 0.18);
+      --success-text: #bbf7d0;
+      --danger-bg: rgba(239, 68, 68, 0.18);
+      --danger-text: #fecaca;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: #000000;
+      min-height: 100vh;
+      padding: 36px 18px;
+    }
+
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 24px 0 40px;
+      box-shadow: none;
+    }
+
+    .top-section {
+      margin: 0 0 28px;
+    }
+
+    .hero-text {
+      width: 100%;
+      max-width: 100%;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 42px 40px;
+    }
+
+    .hero-text h1 {
+      margin: 0;
+      font-size: 2.9rem;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-text p {
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.75;
+    }
+    .stats {
+      display: flex;
+      gap: 24px;
+      margin: 18px 0 14px;
+      width: 100%;
+    }
+
+    .stat {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+    .upload-card {
+      width: 100%;
+      max-width: 100%;
+      border: 1px dashed rgba(255,255,255,0.22);
+      border-radius: 28px;
+      padding: 42px 40px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      text-align: center;
+      margin: 0;
+    }
+
+    .upload-card h2 {
+      margin: 0 0 10px;
+      font-size: 1.35rem;
+    }
+
+    .upload-card p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      max-width: 520px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    button {
+      margin-top: 22px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 13px 24px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+      box-shadow: 0 10px 25px rgba(124, 58, 237, 0.28);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.96;
+    }
+
+    .error {
+      background: var(--danger-bg);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--danger-text);
+      padding: 14px 16px;
+      border-radius: 16px;
+      margin: 0 0 20px;
+    }
+
+    .result {
+      width:100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 24px;
+      margin-top: 28px;
+    }
+
+    .result-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .real {
+      background: var(--success-bg);
+      color: var(--success-text);
+      border: 1px solid rgba(34, 197, 94, 0.28);
+    }
+
+    .fake {
+      background: var(--danger-bg);
+      color: var(--danger-text);
+      border: 1px solid rgba(239, 68, 68, 0.28);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 18px 0 14px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    .stat .value {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .summary-box {
+      margin-top: 12px;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    video {
+      width: 100%;
+      max-height: 460px;
+      border-radius: 18px;
+      background: #000;
+      margin-top: 18px;
+      border: 1px solid var(--border);
+    }
+
+    .bottom-info {
+      margin-top: 32px;
+    }
+
+    .team-box,
+    .mentor-box {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 20px 24px;
+    }
+
+    .mentor-box {
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    .team-title,
+    .mentor-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #e2e8f0;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
+    }
+
+    .team-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .team-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 16px;
+      padding: 14px 16px;
+    }
+
+    .team-card .name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 6px;
+    }
+
+    .team-card .id {
+      color: var(--muted);
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+    }
+
+    .mentor-name {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #f8fafc;
+      margin-bottom: 6px;
+    }
+
+    .mentor-role,
+    .mentor-dept {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .footer {
+      margin-top: 26px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.92rem;
+      border-top: none;
+      box-shadow: none;
+    }
+
+    @media (max-width: 920px) {
+      .wrap {
+        padding: 16px 0 30px;
+      }
+
+      .hero-text,
+      .upload-card {
+        padding: 28px 20px;
+      }
+
+      .hero-text h1 {
+        font-size: 2.1rem;
+      }
+
+      .team-list,
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top-section">
+      <div class="hero-text">
+        <h1>Deepfake Video Detection</h1>
+      </div>
+    </div>
+
+    {% if error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+      <div class="upload-card">
+        <h2>Upload a video for prediction</h2>
+        <p>Supported formats: MP4, MOV, AVI, MKV</p>
+        <input type="file" name="video" accept=".mp4,.mov,.avi,.mkv" required>
+        <button type="submit">Analyze Video</button>
+      </div>
+    </form>
+
+    {% if result %}
+      <div class="result">
+        <div class="result-top">
+          {% if result.label == "Deepfake" %}
+            <div class="pill fake">Prediction: {{ result.label }}</div>
+          {% else %}
+            <div class="pill real">Prediction: {{ result.label }}</div>
+          {% endif %}
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="label">Fake Probability</div>
+            <div class="value">{{ result.probability_fake }}%</div>
+          </div>
+          <div class="stat">
+            <div class="label">Frames Used</div>
+            <div class="value">{{ result.frame_count_used }}</div>
+          </div>
+        </div>
+
+        <div class="summary-box">
+          {{ result.summary }}
+        </div>
+
+        {% if video_url %}
+        <video controls>
+          <source src="{{ video_url }}">
+          Your browser does not support video playback.
+        </video>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="bottom-info">
+      <div class="team-box">
+        <div class="team-title">Project Team</div>
+        <div class="team-list">
+          <div class="team-card">
+            <div class="name">Aashray Lal Nakarmi</div>
+            <div class="id">USN: 22BTRSN060</div>
+          </div>
+          <div class="team-card">
+            <div class="name">Karan Mahato</div>
+            <div class="id">USN: 22BTRSN065</div>
+          </div>
+          <div class="team-card">
+            <div class="name">Prajwal Aryal</div>
+            <div class="id">USN: 22BTRSN066</div>
+          </div>
+          <div class="team-card">
+            <div class="name">Afroj Alam</div>
+            <div class="id">USN: 22BTRSN062</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mentor-box">
+        <div class="mentor-title">Project Mentor</div>
+        <div class="mentor-name">Karthikeyan S.</div>
+        <div class="mentor-role">Assistant Professor</div>
+        <div class="mentor-dept">Department of CE-SE, Bangalore</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
